@@ -1347,7 +1347,7 @@ MonoBehaviour:
   - {fileID: 1397480220}
   - {fileID: 1172438007}
   - {fileID: 39102030}
-  waitTime: 0.05
+  waitTime: 0.5
   doneDealing: 0
   deck: []
 --- !u!4 &1603905128

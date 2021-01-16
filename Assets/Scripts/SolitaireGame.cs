@@ -102,15 +102,36 @@ public class SolitaireGame : MonoBehaviour
             {
                 yield return new WaitForSeconds(waitTime);
 
-                GameObject newCard =
-                    Instantiate(
-                        cardPrefab,
-                        new Vector3(
-                            bottomPos[i].transform.position.x,
-                            bottomPos[i].transform.position.y - yOffset,
-                            bottomPos[i].transform.position.z - zOffset),
-                        Quaternion.identity,
-                        bottomPos[i].transform);
+                //GameObject newCard =
+                //    Instantiate(
+                //        cardPrefab,
+                //        new Vector3(
+                //            bottomPos[i].transform.position.x,
+                //            bottomPos[i].transform.position.y - yOffset,
+                //            bottomPos[i].transform.position.z - zOffset),
+                //        Quaternion.identity,
+                //        bottomPos[i].transform);
+                GameObject newCard = Instantiate(
+                    cardPrefab,
+                    new Vector3(
+                        deckPos.transform.position.x,
+                        deckPos.transform.position.y,
+                        deckPos.transform.position.z
+                        ),
+                    Quaternion.identity,
+                    bottomPos[i].transform
+                    );
+                Debug.Log("bottomPosX = " + bottomPos[i].transform.position.x + ", bottomPosY = " + bottomPos[i].transform.position.y + ", bottomPosZ = " + bottomPos[i].transform.position.z);
+                iTween.MoveTo(
+                    newCard,
+                    bottomPos[i].transform.position.x,
+                    new Vector3(
+                        bottomPos[i].transform.position.x,
+                        bottomPos[i].transform.position.y - yOffset,
+                        bottomPos[i].transform.position.z - zOffset),
+                    1.5f);
+                //yield return newCard;
+                //yield return new WaitForSeconds();
                 newCard.name = card;
                 if (card == bottoms[i][bottoms[i].Count - 1])
                 {
