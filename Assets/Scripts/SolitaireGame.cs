@@ -56,8 +56,10 @@ public class SolitaireGame : MonoBehaviour
         //{
         //    Debug.Log(card);
         //}
+        Debug.Log("deck size = " + deck.Count);
         SolitaireSort();
         StartCoroutine (SolitaireDeal());
+        Debug.Log("deck size = " + deck.Count);
     }
 
     // Create deck from the 2 lists of strings
@@ -102,15 +104,6 @@ public class SolitaireGame : MonoBehaviour
             {
                 yield return new WaitForSeconds(waitTime);
 
-                //GameObject newCard =
-                //    Instantiate(
-                //        cardPrefab,
-                //        new Vector3(
-                //            bottomPos[i].transform.position.x,
-                //            bottomPos[i].transform.position.y - yOffset,
-                //            bottomPos[i].transform.position.z - zOffset),
-                //        Quaternion.identity,
-                //        bottomPos[i].transform);
                 GameObject newCard = Instantiate(
                     cardPrefab,
                     new Vector3(
@@ -121,7 +114,7 @@ public class SolitaireGame : MonoBehaviour
                     Quaternion.identity,
                     bottomPos[i].transform
                     );
-                Debug.Log("bottomPosX = " + bottomPos[i].transform.position.x + ", bottomPosY = " + bottomPos[i].transform.position.y + ", bottomPosZ = " + bottomPos[i].transform.position.z);
+                //Debug.Log("bottomPosX = " + bottomPos[i].transform.position.x + ", bottomPosY = " + bottomPos[i].transform.position.y + ", bottomPosZ = " + bottomPos[i].transform.position.z);
                 iTween.MoveTo(
                     newCard,
                     bottomPos[i].transform.position.x,
@@ -130,8 +123,6 @@ public class SolitaireGame : MonoBehaviour
                         bottomPos[i].transform.position.y - yOffset,
                         bottomPos[i].transform.position.z - zOffset),
                     1.5f);
-                //yield return newCard;
-                //yield return new WaitForSeconds();
                 newCard.name = card;
                 if (card == bottoms[i][bottoms[i].Count - 1])
                 {
