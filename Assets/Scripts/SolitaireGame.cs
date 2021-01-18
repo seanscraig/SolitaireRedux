@@ -22,7 +22,8 @@ public class SolitaireGame : MonoBehaviour
 
     public List<string> deck;
     public List<string> discardPile = new List<string>();
-    public bool doneDealing = false;
+
+    public bool canClick = false;
 
     private List<string> bottom0 = new List<string>();
     private List<string> bottom1 = new List<string>();
@@ -32,7 +33,8 @@ public class SolitaireGame : MonoBehaviour
     private List<string> bottom5 = new List<string>();
     private List<string> bottom6 = new List<string>();
 
-    [SerializeField] private float waitTime = 0f;
+    [SerializeField] private float dealWaitTime = 0f;
+    [SerializeField] private float drawWaitTime = 0f;
     private int deckLocation;
     private int trips;
     private int tripsRemainder;
@@ -111,7 +113,7 @@ public class SolitaireGame : MonoBehaviour
             float zOffset = 0.03f;
             foreach (string card in bottoms[i])
             {
-                yield return new WaitForSeconds(waitTime);
+                yield return new WaitForSeconds(dealWaitTime);
 
                 GameObject newCard = Instantiate(
                     cardPrefab,
@@ -144,9 +146,9 @@ public class SolitaireGame : MonoBehaviour
             }
             if (i == 6)
             {
-                doneDealing = true;
+                canClick = true;
             }
-            if (doneDealing)
+            if (canClick)
             {
                 //Debug.Log("done dealing");
             }
@@ -211,7 +213,7 @@ public class SolitaireGame : MonoBehaviour
         deckLocation = 0;
     }
 
-    public void DealFromDeck()
+    public IEnumerator DealFromDeck()
     {
         // add remaining cards to discard pile
 
@@ -229,24 +231,37 @@ public class SolitaireGame : MonoBehaviour
         {
             // draw 3 new cards
             tripsOnDisplay.Clear();
+            canClick = false;
             float xOffset = 2.5f;
             float zOffset = -0.2f;
-
             foreach (string card in deckTrips[deckLocation])
             {
+                yield return new WaitForSeconds(drawWaitTime);
                 GameObject newTopCard = Instantiate(
                     cardPrefab,
+                    new Vector3(
+                        deckButton.transform.position.x,
+                        deckButton.transform.position.y,
+                        deckButton.transform.position.z),
+                    Quaternion.identity,
+                    deckButton.transform);
+                iTween.MoveTo(
+                    newTopCard,
+                    deckButton.transform.position.x,
                     new Vector3(
                         deckButton.transform.position.x + xOffset,
                         deckButton.transform.position.y,
                         deckButton.transform.position.z + zOffset),
-                    Quaternion.identity,
-                    deckButton.transform);
+                    1.5f);
                 xOffset = xOffset + 0.5f;
                 zOffset = zOffset - 0.2f;
                 newTopCard.name = card;
                 tripsOnDisplay.Add(card);
                 newTopCard.GetComponent<Selectable>().faceUp = true;
+                if (card == deckTrips[deckLocation].Last())
+                {
+                    canClick = true;
+                }
             }
             deckLocation++;
         }

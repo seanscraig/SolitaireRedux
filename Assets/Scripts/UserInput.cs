@@ -19,7 +19,7 @@ public class UserInput : MonoBehaviour
 
     void GetMouseClick()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && solitaireGame.canClick)
         {
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -10));
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
@@ -54,7 +54,7 @@ public class UserInput : MonoBehaviour
     {
         // deck click actions
         //Debug.Log("Clicked on the Deck");
-        solitaireGame.DealFromDeck();
+        StartCoroutine(solitaireGame.DealFromDeck());
     }
 
     void Card()
