@@ -81,7 +81,7 @@ public class SolitaireGame : MonoBehaviour
         {
             foreach (string v in values)
             {
-                newDeck.Add(v + s);
+                newDeck.Add(s + v);
             }
         }
 
@@ -135,6 +135,7 @@ public class SolitaireGame : MonoBehaviour
                         bottomPos[i].transform.position.z - zOffset),
                     1.5f);
                 newCard.name = card;
+                newCard.GetComponent<Selectable>().row = i;
                 if (card == bottoms[i][bottoms[i].Count - 1])
                 {
                     newCard.GetComponent<Selectable>().faceUp = true;
@@ -258,6 +259,7 @@ public class SolitaireGame : MonoBehaviour
                 newTopCard.name = card;
                 tripsOnDisplay.Add(card);
                 newTopCard.GetComponent<Selectable>().faceUp = true;
+                newTopCard.GetComponent<Selectable>().inDeckPile = true;
                 if (card == deckTrips[deckLocation].Last())
                 {
                     canClick = true;
