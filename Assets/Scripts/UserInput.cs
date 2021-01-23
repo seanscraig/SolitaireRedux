@@ -65,10 +65,9 @@ public class UserInput : MonoBehaviour
         // card click actions
         Debug.Log("Clicked on a Card");
 
-        // if the card clicked on is facedown
+        // if it is facedown & not blocked
         if (!selected.GetComponent<Selectable>().faceUp)
         {
-            // if the card clicked on is not blocked
             if (!Blocked(selected))
             {
                 // flip it over
@@ -83,14 +82,14 @@ public class UserInput : MonoBehaviour
             // if it is not blocked
             if (!Blocked(selected))
             {
-                Debug.Log("blocked returned false");
+                //Debug.Log("blocked returned false");
                 // select it
                 slot1 = selected;
             }
-            else
-            {
-                Debug.Log("blocked returned true");
-            }
+            //else
+            //{
+            //    Debug.Log("blocked returned true");
+            //}
         }
 
         // if the card is face up
@@ -145,7 +144,7 @@ public class UserInput : MonoBehaviour
     void Bottom(GameObject selected)
     {
         // bottom click actions
-        Debug.Log("Clicked on a Bottom Slot");
+        //Debug.Log("Clicked on a Bottom Slot");
         // if the card is a king and the empty slot is bottom, then stack
         if (slot1.CompareTag("Card"))
         {
@@ -232,7 +231,7 @@ public class UserInput : MonoBehaviour
             selected.transform.position.y - yOffset,
             selected.transform.position.z - 0.01f);
 
-        Debug.Log("x = " + selected.transform.position.x + "y = " + selected.transform.position.y + "z = " + selected.transform.position.z);
+        //Debug.Log("x = " + selected.transform.position.x + "y = " + selected.transform.position.y + "z = " + selected.transform.position.z);
         slot1.transform.parent = selected.transform; // this makes the children move with the parents
 
         if (s1.inDeckPile) // removes the cards from the trips pile to prevent duplicate cards
@@ -260,6 +259,7 @@ public class UserInput : MonoBehaviour
         {
             solitaireGame.topPos[s1.row].GetComponent<Selectable>().value = s1.value;
             solitaireGame.topPos[s1.row].GetComponent<Selectable>().suit = s1.suit;
+            s1.top = true;
         }
         else
         {
@@ -281,7 +281,7 @@ public class UserInput : MonoBehaviour
             }
             else
             {
-                Debug.Log(s2.name + " is blocked by " + solitaireGame.tripsOnDisplay.Last());
+                //Debug.Log(s2.name + " is blocked by " + solitaireGame.tripsOnDisplay.Last());
                 return true;
             }
         }
@@ -293,7 +293,7 @@ public class UserInput : MonoBehaviour
             }
             else
             {
-                Debug.Log(s2.name + " is blocked by " + solitaireGame.bottoms[s2.row].Last());
+                //Debug.Log(s2.name + " is blocked by " + solitaireGame.bottoms[s2.row].Last());
                 return true;
             }
         }
