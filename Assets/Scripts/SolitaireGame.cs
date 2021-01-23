@@ -217,22 +217,29 @@ public class SolitaireGame : MonoBehaviour
     public IEnumerator DealFromDeck()
     {
         // add remaining cards to discard pile
-
         foreach (Transform child in deckButton.transform)
         {
             if (child.CompareTag("Card"))
             {
+                //yield return new WaitForSeconds(drawWaitTime);
+                //iTween.MoveTo(
+                //    child.gameObject,
+                //    deckButton.transform.position.x,
+                //    new Vector3(
+                //        deckButton.transform.position.x,
+                //        deckButton.transform.position.y,
+                //        deckButton.transform.position.z),
+                //    1.5f);
                 deck.Remove(child.name);
                 discardPile.Add(child.name);
                 Destroy(child.gameObject);
             }
         }
-
         if (deckLocation < trips)
         {
-            // draw 3 new cards
             tripsOnDisplay.Clear();
             canClick = false;
+            // draw 3 new cards
             float xOffset = 2.5f;
             float zOffset = -0.2f;
             foreach (string card in deckTrips[deckLocation])
@@ -277,6 +284,7 @@ public class SolitaireGame : MonoBehaviour
 
     void RestackTopDeck()
     {
+        deck.Clear();
         foreach (string card in discardPile)
         {
             deck.Add(card);

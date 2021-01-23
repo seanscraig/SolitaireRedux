@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class UserInput : MonoBehaviour
 {
@@ -41,12 +42,12 @@ public class UserInput : MonoBehaviour
                 else if (hit.collider.CompareTag("Top"))
                 {
                     // clicked top
-                    Top();
+                    Top(hit.collider.gameObject);
                 }
                 else if (hit.collider.CompareTag("Bottom"))
                 {
                     // clicked bottom
-                    Bottom();
+                    Bottom(hit.collider.gameObject);
                 }
             }
         }
@@ -65,53 +66,94 @@ public class UserInput : MonoBehaviour
         Debug.Log("Clicked on a Card");
 
         // if the card clicked on is facedown
-        // if the card clicked on is not blocked
-        // flip it over
+        if (!selected.GetComponent<Selectable>().faceUp)
+        {
+            // if the card clicked on is not blocked
+            if (!Blocked(selected))
+            {
+                // flip it over
+                selected.GetComponent<Selectable>().faceUp = true;
+                slot1 = this.gameObject;
+            }
+        }
 
         // if the card clicked on is in the deck pile with the trips
-        // if it is not blocked
-        // select it
+        else if (selected.GetComponent<Selectable>().inDeckPile)
+        {
+            // if it is not blocked
+            if (!Blocked(selected))
+            {
+                Debug.Log("blocked returned false");
+                // select it
+                slot1 = selected;
+            }
+            else
+            {
+                Debug.Log("blocked returned true");
+            }
+        }
 
         // if the card is face up
         // if there is no card currently selected
         // select the card
-        if (slot1 == this.gameObject) // not null because we pass in this gameObject instead
+        else
         {
-            slot1 = selected;
-        }
-
-        // if there is already a card selected (and it is not the same card)
-        else if (slot1 != selected)
-        {
-            // if the new card is eligable to stack on the old card
-            if (Stackable(selected))
+            if (slot1 == this.gameObject) // not null because we pass in this gameObject instead
             {
-                // stack it
-                Stack(selected);
-            }
-            else
-            {
-                // select the new card
                 slot1 = selected;
             }
-        }
+
+            // if there is already a card selected (and it is not the same card)
+            else if (slot1 != selected)
+            {
+                // if the new card is eligable to stack on the old card
+                if (Stackable(selected))
+                {
+                    // stack it
+                    Stack(selected);
+                }
+                else
+                {
+                    // select the new card
+                    slot1 = selected;
+                }
+            }
 
             // else if there is already a card selected and it is the same card
-                // if the time is short enough the it is a double click
-                    // if the card is eligible to fly up top, then do it
+            // if the time is short enough the it is a double click
+            // if the card is eligible to fly up top, then do it
+
+
+        }
 
     }
 
-    void Top()
+    void Top(GameObject selected)
     {
         // top click actions
         Debug.Log("Clicked on a Top Slot");
+        if (slot1.CompareTag("Card"))
+        {
+           // if the card is an ace and the empty slot is top, then stack
+           if (slot1.GetComponent<Selectable>().value == 1)
+            {
+                Stack(selected);
+            }
+        }
     }
 
-    void Bottom()
+    void Bottom(GameObject selected)
     {
         // bottom click actions
         Debug.Log("Clicked on a Bottom Slot");
+        // if the card is a king and the empty slot is bottom, then stack
+        if (slot1.CompareTag("Card"))
+        {
+            if (slot1.GetComponent<Selectable>().value == 13)
+            {
+                Stack(selected);
+            }
+        }
     }
 
     bool Stackable(GameObject selected)
@@ -121,47 +163,49 @@ public class UserInput : MonoBehaviour
         //Debug.Log("s1 = " + s1);
         //Debug.Log("s2 = " + s2);
         // compare them to see if they stack
-
-        if (s2.top) // if in the top pile, the cards must stack suited A to K
+        if (!s2.inDeckPile)
         {
-            if (s1.suit == s2.suit || (s1.value == 1 && s2.suit == null))
+            if (s2.top) // if in the top pile, the cards must stack suited A to K
             {
-                if (s1.value == s2.value + 1)
+                if (s1.suit == s2.suit || (s1.value == 1 && s2.suit == null))
                 {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    if (s1.value == s2.value + 1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
-        }
-        else // if in the bottom pile, they must stack alternate colors K to A
-        {
-            if (s1.value == s2.value - 1)
+            else // if in the bottom pile, they must stack alternate colors K to A
             {
-                bool card1Red = true;
-                bool card2Red = true;
+                if (s1.value == s2.value - 1)
+                {
+                    bool card1Red = true;
+                    bool card2Red = true;
 
-                if (s1.suit == "C" || s1.suit == "S")
-                {
-                    card1Red = false;
-                }
+                    if (s1.suit == "C" || s1.suit == "S")
+                    {
+                        card1Red = false;
+                    }
 
-                if (s2.suit == "C" || s2.suit == "S")
-                {
-                    card2Red = false;
-                }
+                    if (s2.suit == "C" || s2.suit == "S")
+                    {
+                        card2Red = false;
+                    }
 
-                if (card1Red == card2Red)
-                {
-                    Debug.Log("Not Stackable");
-                    return false;
-                }
-                else
-                {
-                    Debug.Log("Stackable");
-                    return true;
+                    if (card1Red == card2Red)
+                    {
+                        Debug.Log("Not Stackable");
+                        return false;
+                    }
+                    else
+                    {
+                        Debug.Log("Stackable");
+                        return true;
+                    }
                 }
             }
         }
@@ -174,7 +218,8 @@ public class UserInput : MonoBehaviour
         // else stack the cards with a negative y offset
 
         Selectable s1 = slot1.GetComponent<Selectable>();
-        Selectable s2 = slot1.GetComponent<Selectable>();
+        Selectable s2 = selected.GetComponent<Selectable>();
+
         float yOffset = 0.3f;
 
         if (s2.top || (!s2.top && s1.value == 13))
@@ -186,6 +231,8 @@ public class UserInput : MonoBehaviour
             selected.transform.position.x,
             selected.transform.position.y - yOffset,
             selected.transform.position.z - 0.01f);
+
+        Debug.Log("x = " + selected.transform.position.x + "y = " + selected.transform.position.y + "z = " + selected.transform.position.z);
         slot1.transform.parent = selected.transform; // this makes the children move with the parents
 
         if (s1.inDeckPile) // removes the cards from the trips pile to prevent duplicate cards
@@ -221,5 +268,52 @@ public class UserInput : MonoBehaviour
 
         // after completing move reset slot1 to be essentially null as being null will break the logic
         slot1 = this.gameObject;
+    }
+
+    bool Blocked(GameObject selected)
+    {
+        Selectable s2 = selected.GetComponent<Selectable>();
+        if (s2.inDeckPile == true)
+        {
+            if (s2.name == solitaireGame.tripsOnDisplay.Last())
+            {
+                return false;
+            }
+            else
+            {
+                Debug.Log(s2.name + " is blocked by " + solitaireGame.tripsOnDisplay.Last());
+                return true;
+            }
+        }
+        else
+        {
+            if (s2.name == solitaireGame.bottoms[s2.row].Last()) // check if it is the bottom card
+            {
+                return false;
+            }
+            else
+            {
+                Debug.Log(s2.name + " is blocked by " + solitaireGame.bottoms[s2.row].Last());
+                return true;
+            }
+        }
+        //Selectable s2 = selected.GetComponent<Selectable>();
+        //if (s2.inDeckPile == true)
+        //{
+        //    if (s2.name == solitaireGame.tripsOnDisplay.Last()) // if it is the last trip it is not blocked
+        //        return false;
+        //    else
+        //    {
+        //        //print(s2.name + " is blocked by " + solitaireGame.tripsOnDisplay.Last());
+        //        return true;
+        //    }
+        //}
+        //else
+        //{
+        //    if (s2.name == solitaireGame.bottoms[s2.row].Last()) // check if it is the bottom card
+        //        return false;
+        //    else
+        //        return true;
+        //}
     }
 }
